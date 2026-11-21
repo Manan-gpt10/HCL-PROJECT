@@ -1,0 +1,111 @@
+================================================================================
+SOFTWARE REQUIREMENTS SPECIFICATION (SRS)
+Project: Hotel Booking & Revenue Analysis Tool
+Document: SRS.txt
+================================================================================
+
+1. PROJECT PURPOSE & REAL-WORLD CONTEXT
+--------------------------------------------------------------------------------
+This project provides a straightforward, easy-to-read Python tool to analyze
+hotel booking data across five major Indian cities (Mumbai, Bengaluru, New Delhi,
+Jaipur, and Goa). 
+
+The goal is practical: help hotel managers look past raw spreadsheets and quickly
+understand what actually drives revenue, which booking channels are worth the
+investment, and why certain bookings end up making very little money.
+
+It is specifically designed for a beginner data analyst who needs to walk through
+the code, justify data cleaning decisions, and present clear business conclusions
+to colleagues, mentors, or interviewers without getting lost in technical jargon.
+
+
+2. WHO IS THIS FOR? (USER PERSONAS)
+--------------------------------------------------------------------------------
+- The Analyst: Needs clean, understandable, well-commented
+  code with no mysterious one-liners. Wants to clearly explain "why" each step
+  was taken.
+- The Hotel Manager (Business Audience): Cares about the bottom line—average
+  revenue per booking, whether direct website bookings beat OTA apps, and how to
+  fix low-yield bookings.
+
+
+3. CORE DESIGN RULES & CONSTRAINTS
+--------------------------------------------------------------------------------
+- Single-File Architecture: Everything runs inside one standalone file (main.py).
+  If an external CSV is missing, the script gracefully falls back to built-in
+  data so it runs anywhere without errors.
+- Plain English & Beginner-Friendly: Code uses descriptive variable names,
+  intuitive step-by-step numbers, and readable print statements.
+
+
+4. FUNCTIONAL REQUIREMENTS (WHAT THE TOOL DOES)
+--------------------------------------------------------------------------------
+
+[FR-1] Data Loading & Sanity Check
+- The tool must load the raw booking records (255 rows, 12 attributes).
+- It must immediately report dataset health: row/column count, missing values,
+  and duplicate rows.
+
+[FR-2] Human-Mistake Data Cleaning
+Raw data created by humans is messy. The tool must automatically resolve:
+- Duplicate Bookings: Detect and discard exact duplicate records (5 rows removed,
+  leaving 250 unique bookings).
+- Messy Text Casing: Strip accidental whitespace and standardize city names
+  (e.g., 'JAIPUR ', 'bengaluru', and '  mumbai' all become clean title-case:
+  'Jaipur', 'Bengaluru', 'Mumbai').
+- System Glitches in Stays: Replace impossible negative or zero night stays
+  (such as -3 or 0 nights) with NaN so they do not corrupt the math.
+- Sensible Missing Value Imputation:
+  * For text (Meal_Plan), fill blanks with the most popular choice (the Mode).
+  * For numbers (Room_Rate_INR, Nights_Stayed, Lead_Time_Days, Airport Distance),
+    fill blanks with the MEDIAN.
+    (Human reason: The median represents the typical booking and won't get
+    pulled up by a few ultra-expensive luxury suites the way an average would).
+- Clean Number Formatting: Convert counts (Nights_Stayed, Lead_Time_Days) into
+  clean whole integers.
+
+[FR-3] Feature Engineering (Adding Helpful Business Columns)
+The system must generate three practical columns to help managers make sense of
+the numbers:
+- Revenue_Per_Night: Total revenue divided by nights stayed (the daily yield).
+- Revenue_Tier: Labels each booking as 'High Value (>= 25k)',
+  'Medium Value (15k-25k)', or 'Low Value (< 15k)'.
+- Stay_Type: Groups stays into 'Short Stay (1-2 nights)', 'Medium Stay (3-5 nights)',
+  or 'Long Stay (6+ nights)'.
+
+[FR-4] Answering Practical Business Questions
+The tool must automatically compute and clearly display:
+- Question 1: Overall financial health (batch average revenue, median, and
+  breakdown by revenue tier).
+- Question 2: Primary drivers (Pearson correlation of room rate and stay length
+  against total revenue).
+- Question 3: Room category profitability (ranking Suite, Executive, Deluxe,
+  Standard by average revenue).
+- Question 4: Channel efficiency (comparing Direct Website, Corporate, OTA Apps,
+  and Walk-ins).
+- Question 5: City comparisons (performance across Mumbai, Bengaluru, New Delhi,
+  Goa, and Jaipur).
+- Question 6: Diagnosis of Low-Yield Bookings (< Rs 15,000) to show why they
+  lag behind (e.g., short 1-2 night stays in standard rooms).
+
+[FR-5] Clean Data Export
+- The final, cleaned, 250-row dataset must be saved to a clean CSV
+  (hotel_bookings_clean.csv) so it can be opened in Excel or shared with team
+  members.
+
+
+5. NON-FUNCTIONAL REQUIREMENTS
+--------------------------------------------------------------------------------
+- Readability & Learnability: Any beginner looking at the script must be able
+  to understand the flow within 5 minutes.
+- Portability & Zero-Setup: The program must run with zero configuration across
+  Windows, macOS, or Linux using standard Python.
+- Speed: Execution takes less than 2 seconds from start to finish.
+- Reliability: Handles missing values and corrupted records without throwing
+  unhandled exceptions or crashing.
+
+
+
+================================================================================
+END OF SRS.txt
+================================================================================
